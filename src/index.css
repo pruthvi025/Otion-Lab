@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* ========================================
+     STRICT GLOBAL COLOR SYSTEM
+     DO NOT MODIFY THESE VALUES
+     ======================================== */
+
+    /* BACKGROUND COLORS */
+    --bg-page: #050508;
+    --bg-card: #0a0a12;
+    --bg-elevated: #10101a;
+
+    /* ACCENT COLORS - GOLD (PRIMARY) */
+    --gold: #D4AF37;
+    --gold-glow: rgba(212, 175, 55, 0.3);
+    --gold-subtle: rgba(212, 175, 55, 0.15);
+
+    /* ACCENT COLORS - BLUE (SECONDARY) */
+    --blue: #3B82F6;
+    --blue-glow: rgba(59, 130, 246, 0.3);
+
+    /* TEXT COLORS */
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-tertiary: rgba(255, 255, 255, 0.4);
+
+    /* CARD SYSTEM */
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(212, 175, 55, 0.15);
+
+    /* HSL Variables for Tailwind compatibility */
+    --background: 240 33% 2%;
+    --foreground: 0 0% 100%;
+    --primary: 43 74% 52%;
+    --primary-foreground: 240 33% 2%;
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --card: 240 33% 4%;
+    --card-foreground: 0 0% 100%;
+    --border: 43 74% 52%;
+    --muted: 240 33% 6%;
+    --muted-foreground: 0 0% 60%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+@layer utilities {
+
+    /* Glass effect with gold tint */
+    .glass {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--gold-subtle);
+    }
+
+    .glass-light {
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--gold-subtle);
+    }
+
+    /* Gold gradient text */
+    .text-gradient {
+        background: linear-gradient(135deg, var(--gold) 0%, #B8860B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Gold text color */
+    .text-gold {
+        color: var(--gold);
+    }
+
+    /* Blue text color */
+    .text-blue {
+        color: var(--blue);
+    }
+
+    /* Gradient border with gold */
+    .gradient-border {
+        position: relative;
+    }
+
+    .gradient-border::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 1px;
+        border-radius: inherit;
+        background: linear-gradient(135deg, var(--gold-glow) 0%, var(--gold-subtle) 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    /* Film grain overlay */
+    .film-grain {
+        position: relative;
+    }
+
+    .film-grain::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.015;
+        pointer-events: none;
+    }
+
+    /* Background utilities */
+    .bg-page {
+        background-color: var(--bg-page);
+    }
+
+    .bg-card-surface {
+        background-color: var(--bg-card);
+    }
+
+    .bg-elevated {
+        background-color: var(--bg-elevated);
+    }
+
+    /* Border utilities */
+    .border-gold {
+        border-color: var(--gold);
+    }
+
+    .border-gold-subtle {
+        border-color: var(--gold-subtle);
+    }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-elevated);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-subtle);
+}
+
+/* Selection styling */
+::selection {
+    background: var(--gold-glow);
+    color: var(--text-primary);
+}
