@@ -1,36 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
 
 export default function About() {
-    const [isPlaying, setIsPlaying] = useState(false)
-    const [isMuted, setIsMuted] = useState(false) // Sound ON by default
     const videoRef = useRef(null)
     const sectionRef = useRef(null)
-    const hasUserInteracted = useRef(false)
-
-    // Track user interaction to enable sound (browsers require user gesture)
-    useEffect(() => {
-        const handleInteraction = () => {
-            hasUserInteracted.current = true
-            // Try to unmute if video is playing
-            if (videoRef.current && isPlaying) {
-                videoRef.current.muted = false
-                setIsMuted(false)
-            }
-        }
-
-        // Listen for any user interaction
-        document.addEventListener('click', handleInteraction, { once: true })
-        document.addEventListener('scroll', handleInteraction, { once: true })
-        document.addEventListener('touchstart', handleInteraction, { once: true })
-
-        return () => {
-            document.removeEventListener('click', handleInteraction)
-            document.removeEventListener('scroll', handleInteraction)
-            document.removeEventListener('touchstart', handleInteraction)
-        }
-    }, [isPlaying])
 
     // Auto-play video when section comes into view
     useEffect(() => {
@@ -43,31 +16,19 @@ export default function About() {
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        // Try to play with sound first
-                        videoElement.muted = false
-                        videoElement.play().then(() => {
-                            setIsPlaying(true)
-                            setIsMuted(false)
-                        }).catch((error) => {
-                            // If autoplay with sound fails, try muted
-                            console.log('Autoplay with sound prevented, trying muted:', error)
-                            videoElement.muted = true
-                            setIsMuted(true)
-                            videoElement.play().then(() => {
-                                setIsPlaying(true)
-                            }).catch((err) => {
-                                console.log('Autoplay completely prevented:', err)
-                            })
+                        // Video is visible - auto play (muted for browser policy)
+                        videoElement.muted = true
+                        videoElement.play().catch((err) => {
+                            console.log('Autoplay prevented:', err)
                         })
                     } else {
-                        // Section is not visible - pause video
+                        // Video is not visible - pause
                         videoElement.pause()
-                        setIsPlaying(false)
                     }
                 })
             },
             {
-                threshold: 0.5, // Trigger when 50% of section is visible
+                threshold: 0.3, // Trigger when 30% of section is visible
             }
         )
 
@@ -77,28 +38,6 @@ export default function About() {
             observer.disconnect()
         }
     }, [])
-
-    const togglePlay = () => {
-        if (videoRef.current) {
-            if (isPlaying) {
-                videoRef.current.pause()
-            } else {
-                videoRef.current.play()
-            }
-            setIsPlaying(!isPlaying)
-        }
-    }
-
-    const toggleMute = () => {
-        if (videoRef.current) {
-            videoRef.current.muted = !isMuted
-            setIsMuted(!isMuted)
-        }
-    }
-
-    const handleVideoEnd = () => {
-        setIsPlaying(false)
-    }
 
     return (
         <section ref={sectionRef} id="about" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#050508] relative overflow-hidden">
@@ -153,77 +92,19 @@ export default function About() {
                             }}
                         />
 
-                        {/* Video Element */}
+                        {/* Video Element - Auto-play, Loop, Muted, NO controls */}
                         <div className="relative aspect-video" style={{ background: 'linear-gradient(135deg, #0a0a12 0%, #1a1a25 50%, #0a0a12 100%)' }}>
                             <video
                                 ref={videoRef}
                                 className="w-full h-full object-cover"
-                                muted={isMuted}
+                                loop
+                                muted
                                 playsInline
-                                preload="metadata"
-                                onEnded={handleVideoEnd}
+                                preload="auto"
                             >
                                 <source src="/Video_Generation_Request_Fulfilled.mp4" type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
-
-                            {/* Play Button Overlay - Shows when paused */}
-                            {!isPlaying && (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.4)] cursor-pointer"
-                                    onClick={togglePlay}
-                                >
-                                    <motion.div
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center"
-                                        style={{
-                                            background: 'linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)',
-                                            boxShadow: '0 10px 40px rgba(212, 175, 55, 0.4)',
-                                        }}
-                                    >
-                                        <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[#050508] ml-0.5 sm:ml-1" fill="#050508" />
-                                    </motion.div>
-                                    <motion.div
-                                        className="absolute bottom-3 sm:bottom-4 md:bottom-6 text-xs sm:text-sm font-medium text-white/80"
-                                        initial={{ y: 10, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{ delay: 0.3 }}
-                                    >
-                                        Click to play
-                                    </motion.div>
-                                </motion.div>
-                            )}
-
-                            {/* Video Controls - Shows when playing */}
-                            {isPlaying && (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 md:p-4 bg-gradient-to-t from-[rgba(0,0,0,0.8)] to-transparent"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <button
-                                            onClick={togglePlay}
-                                            className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.25)] active:bg-[rgba(255,255,255,0.3)] transition-colors"
-                                        >
-                                            <Pause className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-white" />
-                                        </button>
-                                        <button
-                                            onClick={toggleMute}
-                                            className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.25)] active:bg-[rgba(255,255,255,0.3)] transition-colors"
-                                        >
-                                            {isMuted ? (
-                                                <VolumeX className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-white" />
-                                            ) : (
-                                                <Volume2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-white" />
-                                            )}
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            )}
                         </div>
                     </div>
 

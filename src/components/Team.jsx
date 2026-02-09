@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Linkedin, Mail, Phone, X, Briefcase, Award, Calendar } from 'lucide-react'
+import { Linkedin, Mail, Phone, X, Briefcase, Award, Calendar, Play, Pause } from 'lucide-react'
 
 const team = [
     {
@@ -356,6 +356,20 @@ function TeamCard({ member, onClick }) {
 export default function Team() {
     const [selectedMember, setSelectedMember] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const videoRef = useRef(null)
+    const [isVideoPlaying, setIsVideoPlaying] = useState(true)
+
+    const toggleVideo = () => {
+        if (videoRef.current) {
+            if (isVideoPlaying) {
+                videoRef.current.pause()
+            } else {
+                videoRef.current.muted = false // Audio on when playing
+                videoRef.current.play()
+            }
+            setIsVideoPlaying(!isVideoPlaying)
+        }
+    }
 
     const handleCardClick = (member) => {
         setSelectedMember(member)
@@ -371,6 +385,75 @@ export default function Team() {
         <>
             <section id="team" className="py-24 min-h-screen" style={{ background: '#050508' }}>
                 <div className="max-w-7xl mx-auto px-6">
+                    {/* Company Video Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-100px' }}
+                        transition={{ duration: 0.6 }}
+                        className="mb-20"
+                    >
+                        <div
+                            className="relative w-full max-w-4xl mx-auto rounded-2xl overflow-hidden"
+                            style={{
+                                border: '1px solid rgba(212, 175, 55, 0.2)',
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+                            }}
+                        >
+                            {/* Video Element */}
+                            <video
+                                ref={videoRef}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                preload="auto"
+                                className="w-full aspect-video object-cover"
+                            >
+                                <source src="/Video_Generation_Request_Fulfilled.mp4" type="video/mp4" />
+                            </video>
+
+                            {/* Play/Pause Button - Always Visible */}
+                            <button
+                                onClick={toggleVideo}
+                                className="absolute bottom-8 right-8 z-50 flex items-center justify-center w-16 h-16 rounded-full transition-all duration-300 cursor-pointer group"
+                                style={{
+                                    background: 'rgba(0, 0, 0, 0.8)',
+                                    backdropFilter: 'blur(8px)',
+                                    border: '2px solid #D4AF37',
+                                    boxShadow: '0 4px 20px rgba(212, 175, 55, 0.3)'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = 'rgba(212, 175, 55, 0.3)'
+                                    e.currentTarget.style.transform = 'scale(1.1)'
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)'
+                                    e.currentTarget.style.transform = 'scale(1)'
+                                }}
+                                aria-label={isVideoPlaying ? 'Pause video' : 'Play video'}
+                            >
+                                {isVideoPlaying ? (
+                                    <Pause className="w-7 h-7 text-[#D4AF37]" />
+                                ) : (
+                                    <Play className="w-7 h-7 text-[#D4AF37] ml-1" />
+                                )}
+                            </button>
+
+                            {/* Video Overlay Text (shown when paused) */}
+                            {!isVideoPlaying && (
+                                <div
+                                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                                    style={{ background: 'rgba(5, 5, 8, 0.4)' }}
+                                >
+                                    <p className="text-white text-lg font-medium opacity-80">
+                                        Click play to watch our story
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+
                     {/* Page Header */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}

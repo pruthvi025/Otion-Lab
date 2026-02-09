@@ -34,27 +34,30 @@ export default function Navbar() {
             )}
         >
             <div className="flex items-center justify-between px-6 py-4">
-                {/* Logo */}
-                <a href="#" className="flex items-center gap-2">
-                    <span className="font-heading text-xl font-bold text-gradient">
-                        Otion Lab
-                    </span>
-                </a>
+                {/* Logo + Navigation Links together on the left */}
+                <div className="flex items-center">
+                    {/* Logo */}
+                    <a href="#" className="flex items-center gap-2">
+                        <span className="font-heading text-xl font-bold text-gradient">
+                            Otion Lab
+                        </span>
+                    </a>
 
-                {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-8">
-                    {navLinks.map((link) => (
-                        <a
-                            key={link.href}
-                            href={link.href}
-                            className="text-sm text-[rgba(255,255,255,0.6)] hover:text-[#D4AF37] transition-colors duration-200"
-                        >
-                            {link.label}
-                        </a>
-                    ))}
+                    {/* Desktop Navigation - Right of logo with spacing */}
+                    <div className="hidden md:flex items-center gap-8 ml-12">
+                        {navLinks.map((link) => (
+                            <a
+                                key={link.href}
+                                href={link.href}
+                                className="text-sm text-[rgba(255,255,255,0.6)] hover:text-[#D4AF37] transition-colors duration-200"
+                            >
+                                {link.label}
+                            </a>
+                        ))}
+                    </div>
                 </div>
 
-                {/* CTA Button */}
+                {/* CTA Button - Far right */}
                 <div className="hidden md:block">
                     <Button asChild>
                         <a href="#contact">Contact Us</a>
