@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { Volume2, VolumeX } from 'lucide-react'
 
 export default function About() {
     const videoRef = useRef(null)
     const sectionRef = useRef(null)
+    const [isMuted, setIsMuted] = useState(true)
 
     // Auto-play video when section comes into view
     useEffect(() => {
@@ -18,6 +20,7 @@ export default function About() {
                     if (entry.isIntersecting) {
                         // Video is visible - auto play (muted for browser policy)
                         videoElement.muted = true
+                        setIsMuted(true)
                         videoElement.play().catch((err) => {
                             console.log('Autoplay prevented:', err)
                         })
@@ -38,6 +41,13 @@ export default function About() {
             observer.disconnect()
         }
     }, [])
+
+    const toggleMute = () => {
+        if (videoRef.current) {
+            videoRef.current.muted = !isMuted
+            setIsMuted(!isMuted)
+        }
+    }
 
     return (
         <section ref={sectionRef} id="about" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#050508] relative overflow-hidden">
@@ -92,7 +102,7 @@ export default function About() {
                             }}
                         />
 
-                        {/* Video Element - Auto-play, Loop, Muted, NO controls */}
+                        {/* Video Element - Auto-play, Loop */}
                         <div className="relative aspect-video" style={{ background: 'linear-gradient(135deg, #0a0a12 0%, #1a1a25 50%, #0a0a12 100%)' }}>
                             <video
                                 ref={videoRef}
@@ -106,6 +116,25 @@ export default function About() {
                                 Your browser does not support the video tag.
                             </video>
                         </div>
+
+                        {/* Audio Toggle Button - Bottom Right */}
+                        <button
+                            onClick={toggleMute}
+                            className="absolute bottom-4 right-4 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer"
+                            style={{
+                                background: 'rgba(0, 0, 0, 0.8)',
+                                backdropFilter: 'blur(8px)',
+                                border: '2px solid #D4AF37',
+                                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
+                            }}
+                            aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+                        >
+                            {isMuted ? (
+                                <VolumeX className="w-5 h-5 text-[#D4AF37]" />
+                            ) : (
+                                <Volume2 className="w-5 h-5 text-[#D4AF37]" />
+                            )}
+                        </button>
                     </div>
 
                     {/* Decorative elements */}
